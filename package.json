@@ -1,0 +1,33 @@
+{
+  "name": "hybrid-bot-engine",
+  "version": "1.0.0",
+  "description": "Unified bot engine for Telegram and Web platforms",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "grammy": "^1.20.0",
+    "openai": "^4.20.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "keywords": ["bot", "telegram", "web", "hybrid", "supabase"],
+  "author": "TelePlatform",
+  "license": "MIT"
+} 
