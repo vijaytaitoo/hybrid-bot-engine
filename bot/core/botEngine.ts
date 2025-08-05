@@ -1,5 +1,7 @@
 import { getUserSession } from './userSession';
 import { runAction, saveBotResponse } from './actions';
+import { askAI } from '../../lib/aiEngine';
+import { supabase } from '../../lib/supabaseClient';
 
 export interface BotRequest {
   userId: string;
@@ -57,7 +59,25 @@ export const BotEngine = {
 async function generateResponse(request: BotRequest, session: any): Promise<BotResponse> {
   const lowerMessage = request.message.toLowerCase();
   
-  // Simple command processing (will be replaced with AI later)
+  // Get user history for AI context
+  const history = await getUserHistory(request.userId);
+  const historyTexts = history.map((msg: any) => msg.text).slice(-5); // Last 5 messages
+  
+  // Try AI first, fallback to simple commands
+  try {
+    const aiResponse = await askAI(request.message, request.userId, historyTexts);
+    
+    if (aiResponse.success) {
+      return {
+        text: aiResponse.text,
+        actions: ['ai_response']
+      };
+    }
+  } catch (error) {
+    console.error('AI processing failed, falling back to simple commands:', error);
+  }
+  
+  // Simple command processing (fallback)
   if (lowerMessage.includes('магазин') || lowerMessage.includes('store')) {
     try {
       await runAction('createStore', {
@@ -108,7 +128,7 @@ async function generateResponse(request: BotRequest, session: any): Promise<BotR
       
       const historyText = history
         .slice(0, 5)
-        .map(msg => `${msg.role === 'user' ? '👤' : '🤖'} ${msg.text}`)
+        .map((msg: any) => `${msg.role === 'user' ? '👤' : '🤖'} ${msg.text}`)
         .join('\n');
       
       return {
@@ -130,6 +150,27 @@ async function generateResponse(request: BotRequest, session: any): Promise<BotR
   };
 }
 
+async function getUserHistory(userId: string): Promise<any[]> {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('user_id', userId)
+      .order('timestamp', { ascending: false })
+      .limit(10);
+
+    if (error) {
+      console.error('Error getting user history:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('getUserHistory error:', error);
+    return [];
+  }
+}
+
 async function sendResponse(platform: 'telegram' | 'web', userId: string, text: string): Promise<void> {
   try {
     if (platform === 'telegram') {
@@ -141,7 +182,7 @@ async function sendResponse(platform: 'telegram' | 'web', userId: string, text: 
         return;
       }
       
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -150,11 +191,64 @@ async function sendResponse(platform: 'telegram' | 'web', userId: string, text: 
           parse_mode: 'Markdown'
         })
       });
+
+      const result = await response.json() as any;
+      
+      if (!result.ok) {
+        console.error('Telegram send error:', result);
+        
+        // Log error and mark user for fallback
+        await logError(userId, 'telegram_send_failed', result);
+        await markUserForFallback(userId);
+        
+        // Send fallback message
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramId,
+            text: `❌ Возникла проблема с Telegram.\nПродолжи в WebBot: ${process.env['FALLBACK_URL'] || 'https://web.telega.app'}`,
+            reply_markup: {
+              inline_keyboard: [[
+                {
+                  text: '🌐 Открыть WebBot',
+                  url: `${process.env['FALLBACK_URL'] || 'https://web.telega.app'}?user=${userId}`
+                }
+              ]]
+            }
+          })
+        });
+      }
     } else {
       // For web platform, we'll handle this in the webhook response
       console.log(`[WebBot -> ${userId}]: ${text}`);
     }
   } catch (error) {
     console.error(`Error sending ${platform} response:`, error);
+    await logError(userId, `${platform}_send_failed`, error);
+  }
+}
+
+async function logError(userId: string, context: string, error: any) {
+  try {
+    await supabase.from('logs').insert({
+      user_id: userId,
+      context: context,
+      error: typeof error === 'string' ? error : JSON.stringify(error),
+      timestamp: new Date().toISOString()
+    });
+  } catch (logError) {
+    console.error('Error logging error:', logError);
+  }
+}
+
+async function markUserForFallback(userId: string) {
+  try {
+    await supabase
+      .from('users')
+      .update({ is_fallback: true })
+      .eq('id', userId);
+  } catch (error) {
+    console.error('Error marking user for fallback:', error);
   }
 } 

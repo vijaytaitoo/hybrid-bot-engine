@@ -1,0 +1,44 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [ main, main-prod ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main-prod'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build
+      run: npm run build
+    
+    - name: Deploy to Railway
+      uses: railway/deploy@v1
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN || '' }}
+        service: hybrid-bot-engine
+      continue-on-error: true
+    
+    - name: Notify deployment
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Successfully deployed to Railway"
+        else
+          echo "❌ Railway deployment failed"
+        fi 
