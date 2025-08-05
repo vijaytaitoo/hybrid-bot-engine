@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { handleTelegramMessage, handleTelegramCallback } from '../../../bot/adapters/telegramAdapter';
+import {
+  handleTelegramMessage,
+  handleTelegramCallback,
+} from '../../../bot/adapters/telegramAdapter';
 import { handleWebMessage, handleWebEvent } from '../../../bot/adapters/webAdapter';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -44,16 +47,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('Webhook processed successfully:', response);
-    return res.status(200).json({ 
-      status: 'ok', 
-      response: response?.text || 'Message processed'
+    return res.status(200).json({
+      status: 'ok',
+      response: response?.text || 'Message processed',
     });
-
   } catch (error) {
     console.error('Webhook handler error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
@@ -61,10 +63,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 // Health check endpoint
 export async function healthCheck(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    return res.status(200).json({ 
+    return res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      version: '1.0.0'
+      version: '1.0.0',
     });
   }
-} 
+}

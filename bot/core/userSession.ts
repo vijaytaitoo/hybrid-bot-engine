@@ -16,18 +16,15 @@ export async function getUserSession(userId: string): Promise<User> {
 
     if (existingUser) {
       // Update last_seen
-      await supabase
-        .from('users')
-        .update({ last_seen: new Date().toISOString() })
-        .eq('id', userId);
-      
+      await supabase.from('users').update({ last_seen: new Date().toISOString() }).eq('id', userId);
+
       return existingUser;
     }
 
     // Create new user
     const newUser: Partial<User> = {
       id: userId,
-      last_seen: new Date().toISOString()
+      last_seen: new Date().toISOString(),
     };
 
     // Set platform-specific ID
@@ -54,7 +51,7 @@ export async function getUserSession(userId: string): Promise<User> {
     // Return a fallback user object
     return {
       id: userId,
-      last_seen: new Date().toISOString()
+      last_seen: new Date().toISOString(),
     };
   }
 }
@@ -65,10 +62,10 @@ export async function updateUserSession(userId: string, updates: Partial<User>):
       .from('users')
       .update({
         ...updates,
-        last_seen: new Date().toISOString()
+        last_seen: new Date().toISOString(),
       })
       .eq('id', userId);
   } catch (error) {
     console.error('updateUserSession error:', error);
   }
-} 
+}

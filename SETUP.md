@@ -3,22 +3,26 @@
 ## 📋 Быстрый старт
 
 ### 1. Клонирование репозитория
+
 ```bash
 git clone https://github.com/teleplatform/hybrid-bot-engine.git
 cd hybrid-bot-engine
 ```
 
 ### 2. Установка зависимостей
+
 ```bash
 npm install
 ```
 
 ### 3. Настройка переменных окружения
+
 ```bash
 cp env.example .env.local
 ```
 
 Заполните `.env.local`:
+
 ```env
 # Supabase Configuration
 SUPABASE_URL=https://qjzbzsvwxrecugafblnd.supabase.co
@@ -42,6 +46,7 @@ NODE_ENV=development
 ### 4. Настройка Supabase
 
 Выполните SQL в Supabase SQL Editor:
+
 ```sql
 -- users table
 create table if not exists users (
@@ -78,6 +83,7 @@ create table if not exists stores (
 ```
 
 ### 5. Запуск в режиме разработки
+
 ```bash
 npm run dev
 ```
@@ -85,11 +91,13 @@ npm run dev
 ## 🧪 Тестирование
 
 ### Тест Web платформы
+
 ```bash
 ./scripts/test-webhook.sh
 ```
 
 ### Тест Telegram (симуляция)
+
 ```bash
 curl -X POST http://localhost:3000/api/bot/webhook \
   -H "Content-Type: application/json" \
@@ -109,18 +117,21 @@ curl -X POST http://localhost:3000/api/bot/webhook \
 ## 🚀 Деплой
 
 ### Vercel (Frontend)
+
 1. Подключите репозиторий к Vercel
 2. Укажите корневую директорию: `apps/webbot-ui`
 3. Добавьте переменные окружения
 4. Deploy
 
 ### Railway (Backend)
+
 1. Подключите репозиторий к Railway
 2. Укажите директорию: `apps/bots/hybrid-bot-engine`
 3. Добавьте переменные окружения
 4. Deploy
 
 ### Supabase Functions
+
 1. Скопируйте код из `pages/api/bot/webhook.ts`
 2. Создайте Edge Function в Supabase
 3. Настройте переменные окружения
@@ -128,6 +139,7 @@ curl -X POST http://localhost:3000/api/bot/webhook \
 ## 🔧 Настройка Telegram Webhook
 
 После деплоя настройте webhook:
+
 ```bash
 curl -X POST https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook \
   -d url=https://your-domain.com/api/bot/webhook
@@ -143,4 +155,4 @@ curl -X POST https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook \
 
 - GitHub Issues: https://github.com/teleplatform/hybrid-bot-engine/issues
 - Email: v.taitoo@bk.ru
-- Telegram: @Vijayee83 
+- Telegram: @Vijayee83

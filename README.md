@@ -29,22 +29,26 @@
 ## 🛠 Установка
 
 1. **Клонирование репозитория**
+
 ```bash
 git clone https://github.com/teleplatform/hybrid-bot-engine.git
 cd hybrid-bot-engine
 ```
 
 2. **Установка зависимостей**
+
 ```bash
 npm install
 ```
 
 3. **Настройка переменных окружения**
+
 ```bash
 cp env.example .env.local
 ```
 
 Заполните `.env.local`:
+
 ```env
 SUPABASE_URL=https://qjzbzsvwxrecugafblnd.supabase.co
 SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -85,6 +89,7 @@ create table stores (
 ```
 
 5. **Запуск**
+
 ```bash
 npm run dev
 ```
@@ -94,6 +99,7 @@ npm run dev
 ### Telegram Webhook
 
 Настройте webhook в Telegram Bot API:
+
 ```
 https://your-domain.com/api/bot/webhook
 ```
@@ -101,6 +107,7 @@ https://your-domain.com/api/bot/webhook
 ### Web API
 
 Отправьте POST запрос:
+
 ```bash
 curl -X POST http://localhost:3000/api/bot/webhook \
   -H "Content-Type: application/json" \
@@ -193,4 +200,4 @@ MIT License
 
 - GitHub Issues
 - Email: v.taitoo@bk.ru
-- Telegram: @Vijayee83 
+- Telegram: @Vijayee83

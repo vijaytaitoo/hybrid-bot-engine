@@ -2,93 +2,93 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linting
-      run: npm run lint || echo "Linting not configured"
-    
-    - name: Run tests
-      run: npm test || echo "Tests not configured"
-    
-    - name: Build
-      run: npm run build
-    
-    - name: Security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN || '' }}
-      with:
-        args: --severity-threshold=high
-      continue-on-error: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint || echo "Linting not configured"
+
+      - name: Run tests
+        run: npm test || echo "Tests not configured"
+
+      - name: Build
+        run: npm run build
+
+      - name: Security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN || '' }}
+        with:
+          args: --severity-threshold=high
+        continue-on-error: true
 
   deploy-vercel:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN || '' }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID || '' }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID || '' }}
-        working-directory: ./apps/webbot-ui
-      continue-on-error: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN || '' }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID || '' }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID || '' }}
+          working-directory: ./apps/webbot-ui
+        continue-on-error: true
 
   deploy-railway:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Deploy to Railway
-      uses: railway/deploy@v1
-      with:
-        railway_token: ${{ secrets.RAILWAY_TOKEN || '' }}
-        service: hybrid-bot-engine
-      continue-on-error: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        uses: railway/deploy@v1
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN || '' }}
+          service: hybrid-bot-engine
+        continue-on-error: true
 
   notify:
     needs: [test, deploy-vercel, deploy-railway]
     runs-on: ubuntu-latest
     if: always()
-    
+
     steps:
-    - name: Notify success
-      if: success()
-      run: |
-        echo "✅ CI/CD completed successfully"
-        echo "🔗 Vercel: https://hybrid-bot-engine.vercel.app"
-        echo "🔗 Railway: https://hybrid-bot-engine.up.railway.app"
-    
-    - name: Notify failure
-      if: failure()
-      run: |
-        echo "❌ CI/CD failed"
-        echo "Check the logs for details" 
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ CI/CD completed successfully"
+          echo "🔗 Vercel: https://hybrid-bot-engine.vercel.app"
+          echo "🔗 Railway: https://hybrid-bot-engine.up.railway.app"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ CI/CD failed"
+          echo "Check the logs for details"

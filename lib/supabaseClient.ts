@@ -32,4 +32,4 @@ export interface Store {
   owner_id: string;
   name: string;
   created_at: string;
-} 
+}

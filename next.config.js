@@ -8,6 +8,6 @@ const nextConfig = {
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
   },
-}
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig;

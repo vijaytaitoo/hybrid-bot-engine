@@ -36,42 +36,44 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run tests
-      run: npm test
-    
-    - name: Build
-      run: npm run build
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
 ```
 
 ### 4. Настройте деплой
 
 #### Vercel (Frontend)
+
 1. Подключите репозиторий к Vercel
 2. Укажите корневую директорию: `apps/webbot-ui`
 3. Добавьте переменные окружения
 4. Deploy
 
 #### Railway (Backend)
+
 1. Подключите репозиторий к Railway
 2. Укажите директорию: `apps/bots/hybrid-bot-engine`
 3. Добавьте переменные окружения
@@ -110,4 +112,4 @@ jobs:
 
 - Email: v.taitoo@bk.ru
 - Telegram: @Vijayee83
-- GitHub Issues: https://github.com/teleplatform/hybrid-bot-engine/issues 
+- GitHub Issues: https://github.com/teleplatform/hybrid-bot-engine/issues

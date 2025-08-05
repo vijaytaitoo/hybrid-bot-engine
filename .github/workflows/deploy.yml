@@ -24,4 +24,4 @@ jobs:
         run: npm run build
 
       - name: Deploy to Railway
-        run: curl -X POST "https://backboard.railway.app/webhook/deploy/YOUR_DEPLOY_HOOK" 
+        run: curl -X POST "https://backboard.railway.app/webhook/deploy/YOUR_DEPLOY_HOOK"

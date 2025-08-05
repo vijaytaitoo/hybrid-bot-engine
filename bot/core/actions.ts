@@ -12,13 +12,13 @@ export async function runAction(action: string, context: ActionContext): Promise
     switch (action) {
       case 'createStore':
         return await createStore(context);
-      
+
       case 'saveMessage':
         return await saveMessage(context);
-      
+
       case 'getUserHistory':
         return await getUserHistory(context.userId);
-      
+
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -35,7 +35,7 @@ async function createStore(context: ActionContext): Promise<any> {
       .insert({
         owner_id: context.userId,
         name: 'Новый магазин',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -65,7 +65,7 @@ async function saveMessage(context: ActionContext): Promise<any> {
         user_id: context.userId,
         role: 'user',
         text: context.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
       .select()
       .single();
@@ -106,15 +106,13 @@ async function getUserHistory(userId: string): Promise<any[]> {
 
 export async function saveBotResponse(userId: string, response: string): Promise<void> {
   try {
-    await supabase
-      .from('messages')
-      .insert({
-        user_id: userId,
-        role: 'bot',
-        text: response,
-        timestamp: new Date().toISOString()
-      });
+    await supabase.from('messages').insert({
+      user_id: userId,
+      role: 'bot',
+      text: response,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.error('saveBotResponse error:', error);
   }
-} 
+}
