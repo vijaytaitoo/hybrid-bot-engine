@@ -1,0 +1,14 @@
+packages:
+  # Приложения
+  - 'apps/*'
+  
+  # Пакеты
+  - 'packages/*'
+  
+  # Исключения
+  - '!**/node_modules/**'
+  - '!**/dist/**'
+  - '!**/build/**'
+  - '!**/.next/**'
+  - '!**/coverage/**'
+  - '!**/.turbo/**'
