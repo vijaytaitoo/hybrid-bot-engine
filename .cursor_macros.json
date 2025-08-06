@@ -1,0 +1,82 @@
+[
+  {
+    "name": "📐 Compare & Merge with AI",
+    "description": "Сравни текущий файл с сохранённым и предложи объединение через AI",
+    "commands": [
+      {
+        "command": "workbench.action.files.compareWithSaved"
+      },
+      {
+        "command": "cursor.editor.runCommand",
+        "args": {
+          "id": "mergeChangesWithAI"
+        }
+      }
+    ],
+    "keybinding": "cmd+shift+m"
+  },
+  {
+    "name": "💾 Force Save Anyway",
+    "description": "Принудительно сохранить файл, даже если есть конфликт с внешним содержимым",
+    "commands": [
+      {
+        "command": "workbench.action.files.saveForce"
+      }
+    ],
+    "keybinding": "cmd+shift+s"
+  },
+  {
+    "name": "🛠 Save + Fix + Format",
+    "description": "Сохранить файл, автоисправить ESLint, отформатировать Prettier, организовать импорты",
+    "commands": [
+      {
+        "command": "workbench.action.files.save"
+      },
+      {
+        "command": "editor.action.organizeImports"
+      },
+      {
+        "command": "eslint.executeAutofix"
+      },
+      {
+        "command": "prettier.format"
+      }
+    ],
+    "keybinding": "cmd+shift+f"
+  },
+  {
+    "name": "🔍 Git Pull & Merge",
+    "description": "Выполнить git pull и автоматически разрешить конфликты через AI",
+    "commands": [
+      {
+        "command": "git.pull"
+      },
+      {
+        "command": "cursor.editor.runCommand",
+        "args": {
+          "id": "resolveGitConflicts"
+        }
+      }
+    ],
+    "keybinding": "cmd+shift+p"
+  },
+  {
+    "name": "🧹 Clean & Format All",
+    "description": "Очистить весь проект: ESLint fix, Prettier format, organize imports",
+    "commands": [
+      {
+        "command": "workbench.action.files.saveAll"
+      },
+      {
+        "command": "eslint.executeAutofixAll"
+      },
+      {
+        "command": "prettier.formatAll"
+      },
+      {
+        "command": "editor.action.organizeImports"
+      }
+    ],
+    "keybinding": "cmd+shift+a"
+  }
+] 

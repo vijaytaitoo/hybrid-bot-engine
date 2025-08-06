@@ -1,0 +1,28 @@
+{
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.autoReload": "on",
+  "files.restoreConflict": true,
+  "files.forceSaveWhenModifiedExternally": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "prettier.enable": true,
+  "typescript.preferences.organizeImports": true,
+  "javascript.preferences.organizeImports": true,
+  "cursor.onConflict": "📐 Compare & Merge with AI",
+  "cursor.autoMergeOnConflict": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false
+} 
