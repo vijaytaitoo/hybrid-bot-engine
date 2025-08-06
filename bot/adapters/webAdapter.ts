@@ -1,58 +1,42 @@
-import { BotEngine } from '../core/botEngine';
+import { processMessage } from '../core/botEngine';
+import { logError, log } from '../../lib/logger';
 
-export async function handleWebMessage(payload: any): Promise<any> {
+export interface WebPayload {
+  userId: string;
+  message: string;
+  sessionId?: string;
+}
+
+export async function handleWebMessage(payload: WebPayload) {
   try {
-    const { message, userId } = payload;
-
-    if (!message || !userId) {
-      console.error('Invalid Web payload:', payload);
-      return { error: 'Invalid payload' };
+    await log('Received Web message', payload.userId, 'web_adapter');
+    
+    if (payload.message && payload.userId) {
+      return await processMessage('web', { id: payload.userId }, payload.message);
     }
-
-    const webUserId = `web_${userId}`;
-
-    console.log(`Web message from ${webUserId}:`, message);
-
-    const response = await BotEngine.process({
-      userId: webUserId,
-      message,
-      platform: 'web',
-      raw: payload,
-    });
-
-    return response;
+    
+    await logError('Invalid Web payload', payload.userId, 'web_adapter', { payload });
+    return { error: 'Invalid payload' };
+    
   } catch (error) {
-    console.error('Web adapter error:', error);
-    return { error: 'Web processing failed' };
+    await logError('Error handling Web message', payload.userId, 'web_adapter', { error, payload });
+    throw error;
   }
 }
 
-export async function handleWebEvent(payload: any): Promise<any> {
+export async function handleWebEvent(payload: any) {
   try {
-    const { event, userId, data } = payload;
-
-    if (!event || !userId) {
-      console.error('Invalid Web event payload:', payload);
-      return { error: 'Invalid event payload' };
+    await log('Received Web event', payload.userId, 'web_adapter');
+    
+    if (payload.event && payload.userId) {
+      return await processMessage('web', { id: payload.userId }, `event:${payload.event}`);
     }
-
-    const webUserId = `web_${userId}`;
-
-    console.log(`Web event from ${webUserId}:`, event, data);
-
-    // Convert event to message for processing
-    const message = `event:${event} ${data ? JSON.stringify(data) : ''}`;
-
-    const response = await BotEngine.process({
-      userId: webUserId,
-      message,
-      platform: 'web',
-      raw: payload,
-    });
-
-    return response;
+    
+    await logError('Invalid Web event payload', payload.userId, 'web_adapter', { payload });
+    return { error: 'Invalid event payload' };
+    
   } catch (error) {
-    console.error('Web event adapter error:', error);
-    return { error: 'Web event processing failed' };
+    await logError('Error handling Web event', payload.userId, 'web_adapter', { error, payload });
+    throw error;
   }
 }

@@ -1,56 +1,59 @@
-import { BotEngine } from '../core/botEngine';
+import { processMessage } from '../core/botEngine';
+import { logError, log } from '../../lib/logger';
 
-export async function handleTelegramMessage(payload: any): Promise<any> {
+export interface TelegramPayload {
+  message?: {
+    from: { id: number };
+    text: string;
+  };
+  callback_query?: {
+    from: { id: number };
+    data: string;
+  };
+}
+
+export async function handleTelegramMessage(payload: TelegramPayload) {
   try {
-    const { message, from } = payload;
+    await log('Received Telegram message', undefined, 'telegram_adapter');
 
-    if (!message?.text || !from?.id) {
-      console.error('Invalid Telegram payload:', payload);
-      return { error: 'Invalid payload' };
+    if (payload.message) {
+      const userId = `tg_${payload.message.from.id}`;
+      const message = payload.message.text;
+
+      return await processMessage('telegram', { id: userId }, message);
     }
 
-    const userId = `tg_${from.id}`;
-
-    console.log(`Telegram message from ${userId}:`, message.text);
-
-    const response = await BotEngine.process({
-      userId,
-      message: message.text,
-      platform: 'telegram',
-      raw: payload,
-    });
-
-    return response;
+    await logError('No message in Telegram payload', undefined, 'telegram_adapter', { payload });
+    return null;
   } catch (error) {
-    console.error('Telegram adapter error:', error);
-    return { error: 'Telegram processing failed' };
+    await logError('Error handling Telegram message', undefined, 'telegram_adapter', {
+      error,
+      payload,
+    });
+    throw error;
   }
 }
 
-export async function handleTelegramCallback(payload: any): Promise<any> {
+export async function handleTelegramCallback(payload: TelegramPayload) {
   try {
-    const { callback_query } = payload;
+    await log('Received Telegram callback', undefined, 'telegram_adapter');
 
-    if (!callback_query?.data || !callback_query?.from?.id) {
-      console.error('Invalid Telegram callback payload:', payload);
-      return { error: 'Invalid callback payload' };
+    if (payload.callback_query) {
+      const userId = `tg_${payload.callback_query.from.id}`;
+      const message = payload.callback_query.data;
+
+      return await processMessage('telegram', { id: userId }, message);
     }
 
-    const userId = `tg_${callback_query.from.id}`;
-    const message = callback_query.data;
-
-    console.log(`Telegram callback from ${userId}:`, message);
-
-    const response = await BotEngine.process({
-      userId,
-      message,
-      platform: 'telegram',
-      raw: payload,
+    await logError('No callback_query in Telegram payload', undefined, 'telegram_adapter', {
+      payload,
     });
-
-    return response;
+    return null;
   } catch (error) {
-    console.error('Telegram callback adapter error:', error);
-    return { error: 'Telegram callback processing failed' };
+    await logError('Error handling Telegram callback', undefined, 'telegram_adapter', {
+      error,
+      payload,
+    });
+    throw error;
   }
 }
